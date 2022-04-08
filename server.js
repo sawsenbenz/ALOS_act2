@@ -1,62 +1,37 @@
-var express = require('express'); // requre the express framework
-var app = express();
-var fs = require('fs'); //require file system object
+const express = require('express')// requre the express framework
+const app = express()
+const Cars = require('db.json')
 
-//get all Cars
-app.get('/getCars', function(req, res){
-    fs.readFile(__dirname + "/" + "Cars.json", 'utf8', function(err, data){
-        console.log(data);
-        res.end(data); 
-    });
+//get all cars
+app.use(express.json())
+app.get('/Cars', (req,res) => {
+  res.status(200).json(Cars)
 })
 
-//get a new Car
-
-var Car =
-    {
-        "id": 101,
-        "model": "AUDI",
-        "name": "A3 Limousine Sport Line",
-        "motor": "TDI",
-        "Box": "S Tronic",
-        "Energie": "Diesel",
-        "price":  6350
-
-    }
-
-app.post('/addCars', function(req, res){
-    fs.readFile(__dirname + "/" + "Cars.json", 'utf8', function(err, data){
-         data = JSON.parse(data);
-         data["Car"] = user["Car"];
-         console.log(data);
-         res.end(JSON.stringify(data));
-
-        });
-})
-//get a car by ID
-app.get('/:id', function (req, res){
-
-    fs.readFile( __dirname + "/" + "Cars.json", 'utf8', function (err, data) {
-
-        var Cars = JSON.parse( data );
-        var Car = Cars["Car" + req.params.id] 
-        console.log( Car );
-        res.end( JSON.stringify(car));
-
-        });
+app.get('/Cars/:id', (req,res) => {
+  const id = parseInt(req.params.id)
+  const Cars = Cars.find(Cars => Cars.id === id)
+  res.status(200).json(Cars)
 })
 
-//delete car 
-var id = 3;
-app.delete('/deleteCars', function (req, res) {    
-    fs.readFile( __dirname + "/" + "Cars.json", 'utf8', function (err, data) {
-        data = JSON.parse( data );
-        delete data["Car" + 3];    
-        console.log( data );
-        res.end( JSON.stringify(data));
-        });
+//add car
+app.post('/Cars', (req,res) => {
+  Cars.push(req.body)
+  res.status(200).json(Cars)
 })
 
-app.listen(3000, () => {
-    console.log("Serveur à l'écoute")
+
+//delete car
+app.delete('/Cars/:id', (req,res) => {
+
+  const id = parseInt(req.params.id)
+  let Cars = Cars.find(Cars => Cars.id === id)
+  Cars.splice(Cars.indexOf(Cars),1)
+  res.status(200).json(Cars)
 })
+
+
+//Started Server 
+app.listen(8080, () => {
+  console.log('Serveur à l ecoute')
+  })
